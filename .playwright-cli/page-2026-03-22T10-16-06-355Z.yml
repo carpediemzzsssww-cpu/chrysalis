@@ -1,0 +1,52 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - button "Go back" [ref=e5] [cursor=pointer]: ‹
+        - generic [ref=e6]:
+          - paragraph [ref=e7]: Preferences
+          - heading "Settings" [level=1] [ref=e8]
+          - paragraph [ref=e9]: All data is stored locally on this device.
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Data
+        - generic [ref=e13]:
+          - button "Export backup JSON" [ref=e14] [cursor=pointer]
+          - generic [ref=e15]: Import backup JSON
+          - button "Clear all data" [ref=e16] [cursor=pointer]
+      - generic [ref=e17]:
+        - paragraph [ref=e18]: Theme
+        - generic [ref=e19]:
+          - button "Light" [ref=e20] [cursor=pointer]
+          - button "Dark" [ref=e21] [cursor=pointer]
+      - generic [ref=e22]:
+        - paragraph [ref=e23]: DeepSeek API key
+        - textbox "sk-..." [ref=e25]
+        - paragraph [ref=e26]:
+          - text: Stored locally for your own reference. The current server summary route still reads
+          - code [ref=e27]: DEEPSEEK_API_KEY
+          - text: from
+          - code [ref=e28]: .env.local
+          - text: .
+      - generic [ref=e29]:
+        - paragraph [ref=e30]: About
+        - heading "Chrysalis" [level=2] [ref=e31]
+        - paragraph [ref=e32]: Version 1.0 · a butterfly-themed daily reflection and growth journal built as a mobile-first web app.
+    - navigation "Primary" [ref=e33]:
+      - generic [ref=e34]:
+        - link "Home" [ref=e35] [cursor=pointer]:
+          - /url: /
+          - img [ref=e36]
+          - generic [ref=e38]: Home
+        - link "Calendar" [ref=e39] [cursor=pointer]:
+          - /url: /entry/2026-03-22
+          - img [ref=e40]
+          - generic [ref=e42]: Calendar
+        - link "Summary" [ref=e43] [cursor=pointer]:
+          - /url: /summary/week/2026-W12
+          - img [ref=e44]
+          - generic [ref=e45]: Summary
+        - link "Settings" [ref=e46] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e47]
+          - generic [ref=e50]: Settings
+  - alert [ref=e51]

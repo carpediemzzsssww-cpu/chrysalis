@@ -1,0 +1,519 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lavender: #c4b5e0;
+  --lavender-light: #ede8f5;
+  --lavender-ultra: #f6f3fb;
+  --misty-blue: #a8c4d8;
+  --misty-blue-light: #d6e6f0;
+  --pale-rose: #e8c4c8;
+  --pale-rose-light: #f5e4e7;
+  --text-primary: #2a2438;
+  --text-secondary: #6b6280;
+  --text-tertiary: #9990a8;
+  --bg: #fdfcfe;
+  --card-bg: rgba(255, 255, 255, 0.84);
+  --card-solid: #ffffff;
+  --border: rgba(180, 168, 200, 0.2);
+  --shadow: 0 18px 50px rgba(42, 36, 56, 0.08);
+  /* CJK fallback loaded via <link> in layout.tsx */
+  --font-display-cjk: "Noto Serif SC";
+}
+
+[data-theme="dark"] {
+  --lavender-ultra: #1e1830;
+  --lavender-light: #2a2244;
+  --misty-blue-light: #182030;
+  --pale-rose-light: #261d22;
+  --text-primary: #f3edf8;
+  --text-secondary: #cfc3e0;
+  --text-tertiary: #b0a8c4;
+  --bg: #16121f;
+  --card-bg: rgba(31, 25, 43, 0.84);
+  --card-solid: #211a2d;
+  --border: rgba(210, 197, 232, 0.18);
+  --shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--text-primary);
+  font-family: var(--font-body), "Helvetica Neue", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top center, rgba(196, 181, 224, 0.28), transparent 36%),
+    linear-gradient(180deg, rgba(245, 241, 251, 0.9), transparent 28%),
+    var(--bg);
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top center, rgba(196, 181, 224, 0.1), transparent 36%),
+    linear-gradient(180deg, rgba(30, 24, 48, 0.8), transparent 28%),
+    var(--bg);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.72), transparent 12%),
+    radial-gradient(circle at 84% 8%, rgba(232, 196, 200, 0.18), transparent 14%),
+    radial-gradient(circle at 76% 42%, rgba(168, 196, 216, 0.16), transparent 16%);
+  opacity: 0.7;
+  z-index: -1;
+}
+
+[data-theme="dark"] body::before {
+  background-image:
+    radial-gradient(circle at 12% 16%, rgba(196, 181, 224, 0.07), transparent 12%),
+    radial-gradient(circle at 84% 8%, rgba(232, 196, 200, 0.05), transparent 14%),
+    radial-gradient(circle at 76% 42%, rgba(168, 196, 216, 0.05), transparent 16%);
+  opacity: 0.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+input,
+textarea {
+  /* Prevent iOS Safari from auto-zooming when font-size < 16px */
+  font-size: max(16px, 1em);
+}
+
+button {
+  cursor: pointer;
+}
+
+textarea,
+input {
+  width: 100%;
+  color: inherit;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+textarea {
+  resize: none;
+}
+
+::selection {
+  background: rgba(196, 181, 224, 0.35);
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 18px) 20px calc(env(safe-area-inset-bottom) + 110px);
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.section-label {
+  margin-bottom: 12px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.soft-button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--lavender-ultra);
+  color: var(--lavender);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.soft-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(196, 181, 224, 0.4);
+}
+
+.secondary-button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.field-area {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.66);
+  padding: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field-area:focus-within {
+  border-color: rgba(196, 181, 224, 0.6);
+  box-shadow: 0 0 0 4px rgba(196, 181, 224, 0.12);
+}
+
+.date-pill {
+  display: flex;
+  min-width: 52px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.date-pill:hover {
+  transform: translateY(-1px);
+}
+
+.date-pill.active {
+  background: var(--lavender);
+  border-color: var(--lavender);
+  color: white;
+}
+
+.date-pill.hasEntry {
+  border-color: rgba(196, 181, 224, 0.72);
+}
+
+.date-pill .dow {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.date-pill .num {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.calendar-day {
+  position: relative;
+  height: 42px;
+  width: 42px;
+  margin: 0 auto;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.calendar-day:hover {
+  transform: translateY(-1px);
+}
+
+.calendar-day.hasEntry {
+  background: var(--lavender-ultra);
+  color: var(--text-primary);
+}
+
+.calendar-day.hasEntry::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 10px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(196, 181, 224, 0.88);
+}
+
+.calendar-day.today {
+  background: var(--lavender);
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day.today::after {
+  display: none;
+}
+
+.calendar-day.selected:not(.today) {
+  border: 1px solid rgba(196, 181, 224, 0.7);
+  background: rgba(196, 181, 224, 0.12);
+}
+
+.calendar-day.empty {
+  visibility: hidden;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mood-pill {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--text-secondary);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.mood-pill:hover {
+  transform: translateY(-1px);
+}
+
+.mood-pill.active {
+  border-color: rgba(196, 181, 224, 0.7);
+  background: var(--lavender-ultra);
+  color: var(--text-primary);
+}
+
+.todo-circle {
+  display: inline-flex;
+  height: 22px;
+  width: 22px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1.5px solid var(--misty-blue);
+  color: white;
+}
+
+.todo-circle.done {
+  background: var(--misty-blue);
+}
+
+.tab-bar-shell {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  z-index: 20;
+  width: min(100%, 430px);
+  transform: translateX(-50%);
+  padding: 0 14px calc(env(safe-area-inset-bottom) + 14px);
+}
+
+.tab-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: rgba(253, 252, 254, 0.92);
+  padding: 10px 10px 12px;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 -8px 30px rgba(42, 36, 56, 0.08);
+}
+
+[data-theme="dark"] .tab-bar {
+  background: rgba(22, 18, 31, 0.92);
+}
+
+[data-theme="dark"] .field-area {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .field-area:focus-within {
+  border-color: rgba(196, 181, 224, 0.35);
+  box-shadow: 0 0 0 4px rgba(196, 181, 224, 0.08);
+}
+
+[data-theme="dark"] .soft-button {
+  background: rgba(196, 181, 224, 0.15);
+  color: var(--lavender);
+}
+
+[data-theme="dark"] .soft-button:hover {
+  background: rgba(196, 181, 224, 0.22);
+  border-color: rgba(196, 181, 224, 0.3);
+}
+
+[data-theme="dark"] .secondary-button {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .date-pill {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .mood-pill {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .mood-pill.active {
+  background: var(--lavender-ultra);
+}
+
+/* Tailwind bg-white/55 used for saved-status bar and todo items */
+[data-theme="dark"] .bg-white\/55 {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.tab-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border-radius: 18px;
+  padding: 8px 4px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.tab-link.active {
+  background: rgba(196, 181, 224, 0.16);
+  color: var(--lavender);
+}
+
+.butterfly-stage {
+  position: relative;
+  display: flex;
+  min-height: 160px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.butterfly-aura {
+  position: absolute;
+  inset: 24px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, rgba(196, 181, 224, 0.22), transparent 52%),
+    radial-gradient(circle at 35% 35%, rgba(168, 196, 216, 0.18), transparent 28%),
+    radial-gradient(circle at 65% 68%, rgba(232, 196, 200, 0.18), transparent 24%);
+}
+
+.butterfly-wing {
+  position: absolute;
+  height: 86px;
+  width: 66px;
+  border-radius: 56% 56% 52% 20%;
+  opacity: 0.72;
+  transform-origin: center center;
+  animation: flutter 4s ease-in-out infinite;
+}
+
+.butterfly-wing.left {
+  left: calc(50% - 74px);
+  transform: rotate(-26deg) scaleX(-1);
+  background: linear-gradient(135deg, rgba(237, 232, 245, 0.95), rgba(168, 196, 216, 0.8));
+}
+
+.butterfly-wing.right {
+  right: calc(50% - 74px);
+  transform: rotate(-26deg);
+  background: linear-gradient(135deg, rgba(237, 232, 245, 0.95), rgba(212, 193, 232, 0.82));
+  animation-delay: 0.14s;
+}
+
+.butterfly-wing.inner-left,
+.butterfly-wing.inner-right {
+  top: 76px;
+  height: 50px;
+  width: 40px;
+  border-radius: 60% 60% 50% 20%;
+}
+
+.butterfly-wing.inner-left {
+  left: calc(50% - 44px);
+  transform: rotate(-18deg) scaleX(-1);
+  background: linear-gradient(135deg, rgba(245, 228, 231, 0.94), rgba(232, 196, 200, 0.64));
+  animation-delay: 0.08s;
+}
+
+.butterfly-wing.inner-right {
+  right: calc(50% - 44px);
+  transform: rotate(-18deg);
+  background: linear-gradient(135deg, rgba(245, 228, 231, 0.94), rgba(168, 196, 216, 0.5));
+  animation-delay: 0.22s;
+}
+
+.butterfly-body {
+  position: absolute;
+  left: 50%;
+  top: 48px;
+  height: 66px;
+  width: 3px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(107, 98, 128, 0.28), rgba(107, 98, 128, 0.68));
+}
+
+.butterfly-stage.paused .butterfly-wing {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .butterfly-wing {
+    animation: none;
+  }
+}
+
+@keyframes flutter {
+  0%,
+  100% {
+    transform: rotate(-26deg) scaleX(var(--wing-flip, 1)) perspective(220px) rotateY(0deg);
+  }
+  50% {
+    transform: rotate(-26deg) scaleX(var(--wing-flip, 1)) perspective(220px) rotateY(15deg);
+  }
+}
+
+.left {
+  --wing-flip: -1;
+}
+
+@media (max-width: 430px) {
+  .app-shell {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

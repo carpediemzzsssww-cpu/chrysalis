@@ -1,0 +1,103 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]: MARCH 22, 2026 · SUNDAY
+        - heading "Good afternoon, Iris" [level=1] [ref=e6]:
+          - text: Good afternoon,
+          - emphasis [ref=e7]: Iris
+        - paragraph [ref=e8]: Each reflection becomes a trace of movement. Keep the rhythm soft, precise, and honest.
+      - generic [ref=e16]:
+        - paragraph [ref=e17]: Small notes, gentle transformations.
+        - paragraph [ref=e18]: Return to the page and let each day leave a wingbeat behind.
+      - generic [ref=e19]:
+        - img [ref=e21]
+        - generic [ref=e24]:
+          - paragraph [ref=e25]: Writing streak
+          - paragraph [ref=e26]: 0 days
+          - paragraph [ref=e27]: "longest: 0 days"
+      - generic [ref=e28]:
+        - link "Today" [ref=e29] [cursor=pointer]:
+          - /url: /entry/2026-03-22
+        - link "Week summary" [ref=e30] [cursor=pointer]:
+          - /url: /summary/week/2026-W12
+        - link "Month summary" [ref=e31] [cursor=pointer]:
+          - /url: /summary/month/2026-03
+        - link "All entries" [ref=e32] [cursor=pointer]:
+          - /url: "#calendar"
+      - generic [ref=e33]:
+        - paragraph [ref=e34]: Calendar
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - heading "March 2026" [level=2] [ref=e37]
+            - generic [ref=e38]:
+              - button "Previous month" [ref=e39] [cursor=pointer]: ‹
+              - button "Next month" [ref=e40] [cursor=pointer]: ›
+          - generic [ref=e41]:
+            - generic [ref=e42]: M
+            - generic [ref=e43]: T
+            - generic [ref=e44]: W
+            - generic [ref=e45]: T
+            - generic [ref=e46]: F
+            - generic [ref=e47]: S
+            - generic [ref=e48]: S
+          - generic [ref=e49]:
+            - button "Sun 1" [ref=e50] [cursor=pointer]: "1"
+            - button "Mon 2" [ref=e51] [cursor=pointer]: "2"
+            - button "Tue 3" [ref=e52] [cursor=pointer]: "3"
+            - button "Wed 4" [ref=e53] [cursor=pointer]: "4"
+            - button "Thu 5" [ref=e54] [cursor=pointer]: "5"
+            - button "Fri 6" [ref=e55] [cursor=pointer]: "6"
+            - button "Sat 7" [ref=e56] [cursor=pointer]: "7"
+            - button "Sun 8" [ref=e57] [cursor=pointer]: "8"
+            - button "Mon 9" [ref=e58] [cursor=pointer]: "9"
+            - button "Tue 10" [ref=e59] [cursor=pointer]: "10"
+            - button "Wed 11" [ref=e60] [cursor=pointer]: "11"
+            - button "Thu 12" [ref=e61] [cursor=pointer]: "12"
+            - button "Fri 13" [ref=e62] [cursor=pointer]: "13"
+            - button "Sat 14" [ref=e63] [cursor=pointer]: "14"
+            - button "Sun 15" [ref=e64] [cursor=pointer]: "15"
+            - button "Mon 16" [ref=e65] [cursor=pointer]: "16"
+            - button "Tue 17" [ref=e66] [cursor=pointer]: "17"
+            - button "Wed 18" [ref=e67] [cursor=pointer]: "18"
+            - button "Thu 19" [ref=e68] [cursor=pointer]: "19"
+            - button "Fri 20" [ref=e69] [cursor=pointer]: "20"
+            - button "Sat 21" [ref=e70] [cursor=pointer]: "21"
+            - button "Sun 22" [ref=e71] [cursor=pointer]: "22"
+            - button "Mon 23" [ref=e72] [cursor=pointer]: "23"
+            - button "Tue 24" [ref=e73] [cursor=pointer]: "24"
+            - button "Wed 25" [ref=e74] [cursor=pointer]: "25"
+            - button "Thu 26" [ref=e75] [cursor=pointer]: "26"
+            - button "Fri 27" [ref=e76] [cursor=pointer]: "27"
+            - button "Sat 28" [ref=e77] [cursor=pointer]: "28"
+            - button "Sun 29" [ref=e78] [cursor=pointer]: "29"
+            - button "Mon 30" [ref=e79] [cursor=pointer]: "30"
+            - button "Tue 31" [ref=e80] [cursor=pointer]: "31"
+      - generic [ref=e81]:
+        - paragraph [ref=e82]: Today's reflection
+        - link "What did you learn today? Tap to start writing" [ref=e83] [cursor=pointer]:
+          - /url: /entry/2026-03-22
+          - paragraph [ref=e84]: What did you learn today?
+          - generic [ref=e85]: Tap to start writing
+      - generic [ref=e87]:
+        - paragraph [ref=e88]: Tomorrow's to-do
+        - generic [ref=e90]: No entries yet this week — ready to emerge?
+    - navigation "Primary" [ref=e91]:
+      - generic [ref=e92]:
+        - link "Home" [ref=e93] [cursor=pointer]:
+          - /url: /
+          - img [ref=e94]
+          - generic [ref=e96]: Home
+        - link "Calendar" [ref=e97] [cursor=pointer]:
+          - /url: /entry/2026-03-22
+          - img [ref=e98]
+          - generic [ref=e100]: Calendar
+        - link "Summary" [ref=e101] [cursor=pointer]:
+          - /url: /summary/week/2026-W12
+          - img [ref=e102]
+          - generic [ref=e103]: Summary
+        - link "Settings" [ref=e104] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e105]
+          - generic [ref=e108]: Settings
+  - alert [ref=e109]

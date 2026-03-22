@@ -1,0 +1,121 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - button "Go back" [ref=e5] [cursor=pointer]: ‹
+        - generic [ref=e6]:
+          - paragraph [ref=e7]: Chrysalis
+          - heading "Weekly summary" [level=1] [ref=e8]
+          - paragraph [ref=e9]: March 16-22, 2026 · Week 12
+        - button "AI" [ref=e10] [cursor=pointer]
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Entries
+          - paragraph [ref=e14]: 0/7
+          - paragraph [ref=e15]: 0% completion
+        - generic [ref=e16]:
+          - paragraph [ref=e17]: Words written
+          - paragraph [ref=e18]: "0"
+          - paragraph [ref=e19]: avg 0/day
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Tasks done
+          - paragraph [ref=e22]: 0/0
+          - paragraph [ref=e23]: 0% completion
+        - generic [ref=e24]:
+          - paragraph [ref=e25]: Top mood
+          - paragraph [ref=e26]: None
+          - paragraph [ref=e27]: No mood data yet
+      - generic [ref=e28]:
+        - paragraph [ref=e29]: Daily word count
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: "0"
+            - generic [ref=e34]: Mon
+          - generic [ref=e35]:
+            - generic [ref=e36]: "0"
+            - generic [ref=e38]: Tue
+          - generic [ref=e39]:
+            - generic [ref=e40]: "0"
+            - generic [ref=e42]: Wed
+          - generic [ref=e43]:
+            - generic [ref=e44]: "0"
+            - generic [ref=e46]: Thu
+          - generic [ref=e47]:
+            - generic [ref=e48]: "0"
+            - generic [ref=e50]: Fri
+          - generic [ref=e51]:
+            - generic [ref=e52]: "0"
+            - generic [ref=e54]: Sat
+          - generic [ref=e55]:
+            - generic [ref=e56]: "0"
+            - generic [ref=e58]: Sun
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - paragraph [ref=e61]: Summary
+          - generic [ref=e62]:
+            - button "AI" [ref=e63] [cursor=pointer]
+            - button "Manual" [ref=e64] [cursor=pointer]
+        - generic [ref=e65]:
+          - textbox "Write your own weekly reflection..." [ref=e67]
+          - button "Save manual summary" [ref=e68] [cursor=pointer]
+      - generic [ref=e69]:
+        - paragraph [ref=e70]: Keywords
+        - generic [ref=e71]:
+          - generic [ref=e72]: growth
+          - generic [ref=e73]: reflection
+          - generic [ref=e74]: next step
+      - generic [ref=e75]:
+        - paragraph [ref=e76]: Insights
+        - generic [ref=e77]:
+          - generic [ref=e78]:
+            - generic [ref=e79]: ↑
+            - paragraph [ref=e80]: "Growth: your journal is ready for its first meaningful entry."
+          - generic [ref=e81]:
+            - generic [ref=e82]: ~
+            - paragraph [ref=e83]: "Pattern: 7 days were left blank in this period, which might be a good place for a lighter reflection ritual."
+          - generic [ref=e84]:
+            - generic [ref=e85]: →
+            - paragraph [ref=e86]: "Action: No dominant mood surfaced yet. Try ending each entry with one concrete next step."
+      - generic [ref=e87]:
+        - paragraph [ref=e88]: Mood this period
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]: —
+            - generic [ref=e92]: Mon
+          - generic [ref=e93]:
+            - generic [ref=e94]: —
+            - generic [ref=e95]: Tue
+          - generic [ref=e96]:
+            - generic [ref=e97]: —
+            - generic [ref=e98]: Wed
+          - generic [ref=e99]:
+            - generic [ref=e100]: —
+            - generic [ref=e101]: Thu
+          - generic [ref=e102]:
+            - generic [ref=e103]: —
+            - generic [ref=e104]: Fri
+          - generic [ref=e105]:
+            - generic [ref=e106]: —
+            - generic [ref=e107]: Sat
+          - generic [ref=e108]:
+            - generic [ref=e109]: —
+            - generic [ref=e110]: Sun
+    - navigation "Primary" [ref=e111]:
+      - generic [ref=e112]:
+        - link "Home" [ref=e113] [cursor=pointer]:
+          - /url: /
+          - img [ref=e114]
+          - generic [ref=e116]: Home
+        - link "Calendar" [ref=e117] [cursor=pointer]:
+          - /url: /entry/2026-03-22
+          - img [ref=e118]
+          - generic [ref=e120]: Calendar
+        - link "Summary" [ref=e121] [cursor=pointer]:
+          - /url: /summary/week/2026-W12
+          - img [ref=e122]
+          - generic [ref=e123]: Summary
+        - link "Settings" [ref=e124] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e125]
+          - generic [ref=e128]: Settings
+  - alert [ref=e129]

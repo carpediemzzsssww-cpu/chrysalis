@@ -1,0 +1,90 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - button "Go back" [ref=e5] [cursor=pointer]: ‹
+        - generic [ref=e6]:
+          - paragraph [ref=e7]: March 22, 2026
+          - heading "Daily entry" [level=1] [ref=e8]
+          - paragraph [ref=e9]: Sunday, March 22, 2026
+        - button "Save" [ref=e10] [cursor=pointer]
+      - generic [ref=e11]:
+        - generic [ref=e12]: New entry
+        - generic [ref=e13]: 0 words total
+      - generic [ref=e14]:
+        - button "Mon 16" [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: Mon
+          - generic [ref=e17]: "16"
+        - button "Tue 17" [ref=e18] [cursor=pointer]:
+          - generic [ref=e19]: Tue
+          - generic [ref=e20]: "17"
+        - button "Wed 18" [ref=e21] [cursor=pointer]:
+          - generic [ref=e22]: Wed
+          - generic [ref=e23]: "18"
+        - button "Thu 19" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: Thu
+          - generic [ref=e26]: "19"
+        - button "Fri 20" [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: Fri
+          - generic [ref=e29]: "20"
+        - button "Sat 21" [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: Sat
+          - generic [ref=e32]: "21"
+        - button "Sun 22" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: Sun
+          - generic [ref=e35]: "22"
+      - generic [ref=e36]:
+        - paragraph [ref=e39]: Today's summary
+        - generic [ref=e40]:
+          - textbox "What did you learn today?" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: Capture the signal, not just the schedule.
+            - generic [ref=e44]: 0 words
+        - generic [ref=e45]:
+          - textbox "Add a tag" [ref=e46]
+          - button "Add" [ref=e47] [cursor=pointer]
+      - generic [ref=e48]:
+        - paragraph [ref=e51]: Reflection
+        - generic [ref=e52]:
+          - textbox "What felt true beneath the surface today?" [ref=e53]
+          - generic [ref=e54]: 0 words
+      - generic [ref=e55]:
+        - paragraph [ref=e58]: Tomorrow's to-do
+        - button "+ Add task" [ref=e60] [cursor=pointer]:
+          - generic [ref=e61]: +
+          - text: Add task
+        - generic [ref=e62]: Task text is saved as soon as you blur an input or change another field.
+      - generic [ref=e63]:
+        - paragraph [ref=e66]: Today's mood
+        - generic [ref=e67]:
+          - button "✦ Inspired" [ref=e68] [cursor=pointer]:
+            - generic [ref=e69]: ✦
+            - text: Inspired
+          - button "🌿 Calm" [ref=e70] [cursor=pointer]:
+            - generic [ref=e71]: 🌿
+            - text: Calm
+          - button "💪 Driven" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]: 💪
+            - text: Driven
+          - button "☁ Tired" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: ☁
+            - text: Tired
+    - navigation "Primary" [ref=e76]:
+      - generic [ref=e77]:
+        - link "Home" [ref=e78] [cursor=pointer]:
+          - /url: /
+          - img [ref=e79]
+          - generic [ref=e81]: Home
+        - link "Calendar" [ref=e82] [cursor=pointer]:
+          - /url: /entry/2026-03-22
+          - img [ref=e83]
+          - generic [ref=e85]: Calendar
+        - link "Summary" [ref=e86] [cursor=pointer]:
+          - /url: /summary/week/2026-W12
+          - img [ref=e87]
+          - generic [ref=e88]: Summary
+        - link "Settings" [ref=e89] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e90]
+          - generic [ref=e93]: Settings
+  - alert [ref=e94]
