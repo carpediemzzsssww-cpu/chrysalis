@@ -47,12 +47,16 @@ const THEME_BOOTSTRAP = `
       var raw = window.localStorage.getItem('chrysalis-data');
       if (!raw) return;
       var parsed = JSON.parse(raw);
-      var theme = parsed && parsed.settings && parsed.settings.theme;
-      if (theme === 'dark') {
+      var s = parsed && parsed.settings;
+      if (s && s.theme === 'dark') {
         document.documentElement.dataset.theme = 'dark';
       }
+      var validSizes = ['small', 'medium', 'large'];
+      if (s && validSizes.indexOf(s.fontSize) !== -1) {
+        document.documentElement.dataset.fontSize = s.fontSize;
+      }
     } catch (error) {
-      console.error('Unable to restore Chrysalis theme.', error);
+      console.error('Unable to restore Chrysalis preferences.', error);
     }
   })();
 `;

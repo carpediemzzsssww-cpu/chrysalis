@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { TabBar } from "@/components/TabBar";
 import { getAllEntries } from "@/lib/storage";
-import { formatMonthLabel, getMoodEmoji, parseDateKey, sortDateKeys } from "@/lib/utils";
+import { formatMonthLabel, getMoodEmoji, parseDateKey, QUICK_CATEGORIES, sortDateKeys } from "@/lib/utils";
 import type { Entry } from "@/lib/types";
 
 function groupByMonth(entries: Entry[]): { label: string; items: Entry[] }[] {
@@ -28,6 +28,7 @@ function groupByMonth(entries: Entry[]): { label: string; items: Entry[] }[] {
 export default function EntriesPage() {
   const [groups, setGroups] = useState<{ label: string; items: Entry[] }[]>([]);
   const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
 
   useEffect(() => {
     const all = getAllEntries();
@@ -38,19 +39,20 @@ export default function EntriesPage() {
   }, []);
 
   const q = query.trim().toLowerCase();
-  const filteredGroups = q
-    ? groups
-        .map((group) => ({
-          ...group,
-          items: group.items.filter(
-            (entry) =>
-              entry.summary?.toLowerCase().includes(q) ||
-              entry.reflection?.toLowerCase().includes(q) ||
-              entry.tags.some((tag) => tag.toLowerCase().includes(q)),
-          ),
-        }))
-        .filter((group) => group.items.length > 0)
-    : groups;
+  const filteredGroups = groups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((entry) => {
+        if (categoryFilter && !entry.tags.includes(categoryFilter)) return false;
+        if (!q) return true;
+        return (
+          entry.summary?.toLowerCase().includes(q) ||
+          entry.reflection?.toLowerCase().includes(q) ||
+          entry.tags.some((tag) => tag.toLowerCase().includes(q))
+        );
+      }),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <main className="app-shell">
@@ -80,6 +82,28 @@ export default function EntriesPage() {
                 ✕
               </button>
             )}
+          </div>
+        )}
+
+        {groups.some((g) => g.items.some((e) => QUICK_CATEGORIES.some((c) => e.tags.includes(c)))) && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className={`mood-pill px-3 py-1.5 text-sm ${categoryFilter === null ? "active" : ""}`}
+              onClick={() => setCategoryFilter(null)}
+            >
+              全部
+            </button>
+            {QUICK_CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={`mood-pill px-3 py-1.5 text-sm ${categoryFilter === cat ? "active" : ""}`}
+                onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         )}
 

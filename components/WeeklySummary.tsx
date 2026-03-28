@@ -45,7 +45,7 @@ function buildEntriesPayload(entries: Entry[]) {
   return entries
     .map((entry) => {
       const todos = entry.todos.length
-        ? entry.todos.map((todo) => `${todo.done ? "[x]" : "[ ]"} ${todo.text}`).join("; ")
+        ? entry.todos.map((todo) => `[${todo.status === "done" ? "x" : todo.status === "partial" ? "~" : todo.status === "skipped" ? "-" : " "}] ${todo.text}${todo.note ? ` (${todo.note})` : ""}`).join("; ")
         : "No todos";
 
       return [

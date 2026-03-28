@@ -3,12 +3,16 @@ export const STORAGE_KEY = "chrysalis-data";
 export type SummaryType = "week" | "month";
 export type AiProvider = "deepseek" | "openai" | "anthropic";
 export type ThemeMode = "light" | "dark";
+export type FontSize = "small" | "medium" | "large";
 export type Mood = "inspired" | "calm" | "driven" | "tired" | "stressed";
+export type TodoStatus = "pending" | "done" | "partial" | "skipped";
 
 export interface Todo {
   id: string;
   text: string;
-  done: boolean;
+  status: TodoStatus;
+  note?: string;
+  carriedFrom?: string;
 }
 
 export interface Entry {
@@ -46,6 +50,7 @@ export interface SummaryRecord {
 export interface Settings {
   userName: string;
   theme: ThemeMode;
+  fontSize: FontSize;
   aiProvider: AiProvider;
   deepseekApiKey: string;
   openaiApiKey: string;
@@ -64,6 +69,7 @@ export interface ChrysalisData {
 export const DEFAULT_SETTINGS: Settings = {
   userName: "",
   theme: "light",
+  fontSize: "medium",
   aiProvider: "deepseek",
   deepseekApiKey: "",
   openaiApiKey: "",

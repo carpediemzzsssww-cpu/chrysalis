@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TabBar } from "@/components/TabBar";
-import type { AiProvider, Settings } from "@/lib/types";
+import type { AiProvider, FontSize, Settings } from "@/lib/types";
 import { clearAllData, exportData, getSettings, importData, recordExport, updateSettings } from "@/lib/storage";
 
 export default function SettingsPage() {
@@ -25,6 +25,13 @@ export default function SettingsPage() {
     setSettings(next);
     syncTheme(theme);
     setStatus(`Theme updated to ${theme}.`);
+  };
+
+  const handleFontSizeChange = (fontSize: FontSize) => {
+    const next = updateSettings({ fontSize });
+    setSettings(next);
+    document.documentElement.dataset.fontSize = fontSize;
+    setStatus(`Writing size set to ${fontSize}.`);
   };
 
   const handleExport = () => {
@@ -191,6 +198,28 @@ export default function SettingsPage() {
               Dark
             </button>
           </div>
+        </section>
+
+        <section className="glass-card p-5">
+          <p className="section-label">Writing size</p>
+          <div className="grid grid-cols-3 gap-3">
+            {(["small", "medium", "large"] as FontSize[]).map((size) => (
+              <button
+                key={size}
+                type="button"
+                className={`mood-pill py-4 ${settings?.fontSize === size ? "active" : ""}`}
+                onClick={() => handleFontSizeChange(size)}
+              >
+                <span style={{ fontSize: size === "small" ? "13px" : size === "large" ? "19px" : "16px" }}>
+                  A
+                </span>
+                <span className="block text-xs mt-0.5 capitalize">{size}</span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-5 text-[color:var(--text-tertiary)]">
+            Affects the font size in the summary and reflection text areas.
+          </p>
         </section>
 
         <section className="glass-card p-5">

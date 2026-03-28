@@ -2,6 +2,8 @@ import type { Entry, Mood } from "@/lib/types";
 
 export const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+export const QUICK_CATEGORIES = ["实习", "学习", "生活"] as const;
+
 export const MOOD_META: Record<
   Mood,
   {
@@ -385,7 +387,7 @@ export function getTopMood(entries: Entry[]): Mood | null {
 
 export function createEmptyInsights(entries: Entry[], missingDays: number, topMood: Mood | null): string[] {
   const richestEntry = [...entries].sort((left, right) => right.wordCount - left.wordCount)[0];
-  const completed = entries.flatMap((entry) => entry.todos).filter((todo) => todo.done).length;
+  const completed = entries.flatMap((entry) => entry.todos).filter((todo) => todo.status === "done").length;
 
   return [
     richestEntry
@@ -407,7 +409,7 @@ export function summarizePeriodStats(entries: Entry[]) {
   return {
     entriesCount: entries.length,
     totalWords: entries.reduce((total, entry) => total + entry.wordCount, 0),
-    todosCompleted: todos.filter((todo) => todo.done).length,
+    todosCompleted: todos.filter((todo) => todo.status === "done").length,
     todosTotal: todos.length,
     topMood: getTopMood(entries),
   };

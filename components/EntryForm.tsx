@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { Mood, Todo } from "@/lib/types";
+import type { Mood, Todo, TodoStatus } from "@/lib/types";
 import { deleteEntry, getAllEntries, getEntry, saveEntry } from "@/lib/storage";
-import { countWords, createId, formatEntryHeaderDate, formatLongDate, formatShortWeekday, getWeekDates, parseDateKey, todayKey } from "@/lib/utils";
+import { addDays, countWords, createId, formatEntryHeaderDate, formatLongDate, formatShortWeekday, getWeekDates, parseDateKey, QUICK_CATEGORIES, todayKey } from "@/lib/utils";
 import { MoodPicker } from "@/components/MoodPicker";
 import { TodoList } from "@/components/TodoList";
 
@@ -168,6 +168,7 @@ function FullscreenEditor({
   value,
   placeholder,
   inputClassName,
+  inputStyle,
   onChange,
   onClose,
 }: {
@@ -177,6 +178,7 @@ function FullscreenEditor({
   value: string;
   placeholder: string;
   inputClassName?: string;
+  inputStyle?: React.CSSProperties;
   onChange: (value: string) => void;
   onClose: () => void;
 }) {
@@ -216,6 +218,7 @@ function FullscreenEditor({
         value={value}
         placeholder={placeholder}
         className={`flex-1 resize-none bg-transparent px-5 pt-5 text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-tertiary)] ${inputClassName ?? ""}`}
+        style={inputStyle}
         onChange={(e) => onChange(e.target.value)}
       />
 
@@ -261,7 +264,29 @@ export function EntryForm({ date }: { date: string }) {
     const existing = getEntry(date);
     setSummary(existing?.summary ?? "");
     setReflection(existing?.reflection ?? "");
-    const initialTodos = existing?.todos ?? [];
+
+    let initialTodos = existing?.todos ?? [];
+
+    // Auto-carry unfinished todos from the previous day into a new entry
+    if (!existing) {
+      const yesterday = addDays(date, -1);
+      const prev = getEntry(yesterday);
+      if (prev) {
+        const unfinished = prev.todos.filter(
+          (todo) => todo.status === "pending" || todo.status === "partial",
+        );
+        if (unfinished.length > 0) {
+          initialTodos = unfinished.map((todo) => ({
+            ...todo,
+            id: createId(),
+            status: "pending" as TodoStatus,
+            note: undefined,
+            carriedFrom: yesterday,
+          }));
+        }
+      }
+    }
+
     setTodos(initialTodos);
     todosRef.current = initialTodos;
     setMood(existing?.mood ?? null);
@@ -340,7 +365,8 @@ export function EntryForm({ date }: { date: string }) {
           dotColor="bg-lavender"
           value={summary}
           placeholder="What did today teach you?"
-          inputClassName="font-display text-[17px] italic leading-8"
+          inputClassName="font-display italic leading-relaxed"
+          inputStyle={{ fontSize: "var(--writing-font-size)" }}
           onChange={(val) => setSummary(val)}
           onClose={() => {
             setFullscreenField(null);
@@ -355,7 +381,8 @@ export function EntryForm({ date }: { date: string }) {
           dotColor="bg-pale-rose"
           value={reflection}
           placeholder="What felt true beneath the surface today?"
-          inputClassName="text-[15px] leading-8"
+          inputClassName="leading-relaxed"
+          inputStyle={{ fontSize: "var(--writing-font-size)" }}
           onChange={(val) => setReflection(val)}
           onClose={() => {
             setFullscreenField(null);
@@ -437,7 +464,8 @@ export function EntryForm({ date }: { date: string }) {
           <textarea
             rows={5}
             placeholder="What did today teach you?"
-            className="font-display text-[17px] italic leading-7 text-[color:var(--text-primary)] placeholder:text-[color:var(--text-tertiary)]"
+            className="font-display italic leading-relaxed text-[color:var(--text-primary)] placeholder:text-[color:var(--text-tertiary)]"
+            style={{ fontSize: "var(--writing-font-size)" }}
             value={summary}
             onChange={(event) => setSummary(event.target.value)}
             onBlur={() => persist({ summary })}
@@ -449,7 +477,29 @@ export function EntryForm({ date }: { date: string }) {
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
-          {tags.map((tag, index) => {
+          {QUICK_CATEGORIES.map((cat) => {
+            const active = tags.includes(cat);
+            return (
+              <button
+                key={cat}
+                type="button"
+                className={`mood-pill px-3 py-1.5 text-sm ${active ? "active" : ""}`}
+                onClick={() => {
+                  const nextTags = active
+                    ? tags.filter((t) => t !== cat)
+                    : [...tags, cat];
+                  setTags(nextTags);
+                  persist({ tags: nextTags });
+                }}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          {tags.filter((tag) => !(QUICK_CATEGORIES as readonly string[]).includes(tag)).map((tag, index) => {
             const tone =
               index % 3 === 0
                 ? "bg-lavender-ultra text-lavender"
@@ -513,7 +563,8 @@ export function EntryForm({ date }: { date: string }) {
           <textarea
             rows={5}
             placeholder="What felt true beneath the surface today?"
-            className="text-[15px] leading-7 placeholder:text-[color:var(--text-tertiary)]"
+            className="leading-relaxed placeholder:text-[color:var(--text-tertiary)]"
+            style={{ fontSize: "var(--writing-font-size)" }}
             value={reflection}
             onChange={(event) => setReflection(event.target.value)}
             onBlur={() => persist({ reflection })}
@@ -532,9 +583,9 @@ export function EntryForm({ date }: { date: string }) {
         <TodoList
           todos={todos}
           focusId={focusTodoId}
-          onToggle={(id) =>
+          onStatusChange={(id, status) =>
             updateTodos(
-              todos.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)),
+              todosRef.current.map((todo) => (todo.id === id ? { ...todo, status } : todo)),
             )
           }
           onTextChange={(id, value) => {
@@ -544,14 +595,20 @@ export function EntryForm({ date }: { date: string }) {
             todosRef.current = next;
             setTodos(next);
           }}
+          onNoteChange={(id, note) =>
+            updateTodos(
+              todosRef.current.map((todo) => (todo.id === id ? { ...todo, note } : todo)),
+            )
+          }
           onAdd={() => {
             const newId = createId();
-            const next = [...todosRef.current, { id: newId, text: "", done: false }];
+            const next = [...todosRef.current, { id: newId, text: "", status: "pending" as TodoStatus }];
             todosRef.current = next;
             setTodos(next);
             setFocusTodoId(newId);
           }}
-          onRemove={(id) => updateTodos(todos.filter((todo) => todo.id !== id))}
+          onRemove={(id) => updateTodos(todosRef.current.filter((todo) => todo.id !== id))}
+          onReorder={(next) => updateTodos(next)}
           onBlur={() => persist()}
         />
         <div className="mt-2 text-xs text-[color:var(--text-tertiary)]">

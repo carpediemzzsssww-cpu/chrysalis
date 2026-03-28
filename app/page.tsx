@@ -25,11 +25,18 @@ export default function HomePage() {
       setEntries(allEntries);
       setSettings(s);
 
-      const hasEntries = Object.keys(allEntries).length > 0;
-      const lastExport = s.lastExportedAt ? new Date(s.lastExportedAt).getTime() : 0;
+      const entryList = Object.values(allEntries);
+      const hasEntries = entryList.length > 0;
       const sevenDays = 7 * 24 * 60 * 60 * 1000;
-      if (hasEntries && Date.now() - lastExport > sevenDays) {
-        setShowBackupBanner(true);
+
+      if (hasEntries) {
+        // Use last export time if available, otherwise use the oldest entry's creation date
+        const reference = s.lastExportedAt
+          ? new Date(s.lastExportedAt).getTime()
+          : Math.min(...entryList.map((e) => new Date(e.createdAt).getTime()));
+        if (Date.now() - reference > sevenDays) {
+          setShowBackupBanner(true);
+        }
       }
     };
 
@@ -165,10 +172,12 @@ export default function HomePage() {
                   <div
                     key={todo.id}
                     className={`flex items-center gap-3 border-b border-[color:var(--border)] pb-3 text-sm ${
-                      todo.done ? "text-[color:var(--text-tertiary)] line-through" : "text-[color:var(--text-secondary)]"
+                      todo.status === "done" || todo.status === "skipped" ? "text-[color:var(--text-tertiary)] line-through" : "text-[color:var(--text-secondary)]"
                     } last:border-b-0 last:pb-0`}
                   >
-                    <span className={`todo-circle ${todo.done ? "done" : ""}`}>{todo.done ? "✓" : ""}</span>
+                    <span className={`todo-circle ${todo.status === "done" ? "done" : todo.status === "partial" ? "partial" : todo.status === "skipped" ? "skipped" : ""}`}>
+                      {todo.status === "done" ? "✓" : todo.status === "partial" ? "—" : todo.status === "skipped" ? "✕" : ""}
+                    </span>
                     <span>{todo.text}</span>
                   </div>
                 ))}

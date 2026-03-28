@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --writing-font-size: 18px;
   --lavender: #c4b5e0;
   --lavender-light: #ede8f5;
   --lavender-ultra: #f6f3fb;
@@ -21,6 +22,10 @@
   /* CJK fallback loaded via <link> in layout.tsx */
   --font-display-cjk: "Noto Serif SC";
 }
+
+[data-font-size="small"]  { --writing-font-size: 15px; }
+[data-font-size="medium"] { --writing-font-size: 18px; }
+[data-font-size="large"]  { --writing-font-size: 22px; }
 
 [data-theme="dark"] {
   --lavender-ultra: #1e1830;
@@ -326,6 +331,21 @@ textarea {
 
 .todo-circle.done {
   background: var(--misty-blue);
+}
+
+.todo-circle.partial {
+  border-color: #d97706;
+  color: #d97706;
+  background: #fffbeb;
+}
+
+.todo-circle.skipped {
+  border-color: var(--text-tertiary);
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .todo-circle.partial {
+  background: rgba(217, 119, 6, 0.15);
 }
 
 .tab-bar-shell {

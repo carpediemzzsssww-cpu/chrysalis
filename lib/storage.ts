@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, STORAGE_KEY, type AiProvider, type ChrysalisData, type Entry, type Settings, type SummaryRecord } from "@/lib/types";
+import { DEFAULT_SETTINGS, STORAGE_KEY, type AiProvider, type ChrysalisData, type Entry, type FontSize, type Settings, type SummaryRecord, type TodoStatus } from "@/lib/types";
 import { calculateStreaks, countWords } from "@/lib/utils";
 
 function createDefaultData(): ChrysalisData {
@@ -23,11 +23,22 @@ function sanitizeEntry(date: string, value: Partial<Entry>): Entry {
     todos: Array.isArray(value.todos)
       ? value.todos
           .filter((todo) => todo && typeof todo.text === "string")
-          .map((todo) => ({
-            id: typeof todo.id === "string" ? todo.id : `${Date.now()}-${Math.random()}`,
-            text: todo.text,
-            done: Boolean(todo.done),
-          }))
+          .map((todo) => {
+            const validStatuses: TodoStatus[] = ["pending", "done", "partial", "skipped"];
+            const legacyDone = (todo as unknown as Record<string, unknown>).done;
+            const status: TodoStatus = validStatuses.includes(todo.status)
+              ? todo.status
+              : legacyDone
+              ? "done"
+              : "pending";
+            return {
+              id: typeof todo.id === "string" ? todo.id : `${Date.now()}-${Math.random()}`,
+              text: todo.text,
+              status,
+              note: typeof todo.note === "string" ? todo.note : undefined,
+              carriedFrom: typeof todo.carriedFrom === "string" ? todo.carriedFrom : undefined,
+            };
+          })
       : [],
     mood: value.mood ?? null,
     tags: Array.isArray(value.tags)
@@ -68,9 +79,13 @@ function sanitizeSummary(period: string, value: Partial<SummaryRecord>): Summary
 
 function sanitizeSettings(value: Partial<Settings> | undefined): Settings {
   const validProviders: AiProvider[] = ["deepseek", "openai", "anthropic"];
+  const validFontSizes: FontSize[] = ["small", "medium", "large"];
   return {
     userName: typeof value?.userName === "string" ? value.userName : "",
     theme: value?.theme === "dark" ? "dark" : "light",
+    fontSize: validFontSizes.includes(value?.fontSize as FontSize)
+      ? (value?.fontSize as FontSize)
+      : "medium",
     aiProvider: validProviders.includes(value?.aiProvider as AiProvider)
       ? (value?.aiProvider as AiProvider)
       : "deepseek",
