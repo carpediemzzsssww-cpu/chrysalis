@@ -40,6 +40,11 @@ export function addDays(dateKey: string, days: number): string {
   return formatDateKey(date);
 }
 
+export function daysBetween(a: string, b: string): number {
+  const msPerDay = 86400000;
+  return Math.round((parseDateKey(b).getTime() - parseDateKey(a).getTime()) / msPerDay);
+}
+
 export function startOfWeek(dateKey: string): string {
   const date = parseDateKey(dateKey);
   const mondayOffset = (date.getDay() + 6) % 7;

@@ -32,21 +32,29 @@ function extractSummaryAndKeywords(content: string) {
 
 function buildPrompts(type: "week" | "month", entries: string) {
   const systemPrompt =
-    `You are the Chrysalis journal companion — a thoughtful, precise presence that helps users find meaning across their days. ` +
-    `Synthesize journal entries into honest reflections that surface patterns the writer might not have noticed themselves.\n\n` +
-    `Tone: warm and precise. Avoid generic affirmations ("great job", "keep it up"). Prioritize real signal over vague encouragement. ` +
-    `Write as if you have read each entry carefully and noticed something true.\n\n` +
+    `You are the Chrysalis journal companion — a perceptive reader who finds hidden connections across journal entries.\n\n` +
+    `Your job is NOT to summarize what happened. The writer already knows that. Instead:\n` +
+    `- Find connections between entries that the writer probably didn't notice (e.g., a reflection in one entry echoes a problem from another day in a different domain).\n` +
+    `- Read mood shifts as signals: what triggers the shift? What does the pattern reveal about what energizes or drains the writer?\n` +
+    `- Look at to-do patterns: which tasks get done instantly vs. which ones get carried forward for days? What does that say?\n` +
+    `- Surface one specific, non-obvious observation — something that would make the writer think "I hadn't noticed that."\n\n` +
+    `Tone: direct and precise. No generic affirmations ("great job", "keep it up", "you're growing"). No vague encouragement.\n` +
+    `Write as if speaking to a smart, self-aware person who wants signal, not comfort.\n\n` +
     `Respond ONLY with valid JSON — no markdown fences, no extra text:\n` +
     `{"summary":"...","keywords":["...","..."]}`;
 
   const weekPrompt =
     `Here are this week's journal entries. Each entry contains: date, a daily summary, a personal reflection, mood, tags, and to-do status.\n\n` +
-    `Write a 2–4 sentence weekly synthesis. Then provide 3–5 short keywords.\n` +
+    `Write a 3–5 sentence weekly synthesis that surfaces hidden patterns, cross-entry connections, and non-obvious observations. ` +
+    `Do NOT restate what happened — instead tell the writer something they might not have realized about their own week.\n` +
+    `Then provide 3–5 keywords that capture the underlying themes (not surface-level topics).\n` +
     `Respond in the same language as the entries.\n\n---\n${entries}`;
 
   const monthPrompt =
     `Here are this month's journal entries. Each entry contains: date, a daily summary, a personal reflection, mood, tags, and to-do status.\n\n` +
-    `Write a 3–5 sentence monthly synthesis. Then provide 3–5 short keywords.\n` +
+    `Write a 4–6 sentence monthly synthesis that surfaces hidden patterns, recurring tensions, and shifts in how the writer thinks. ` +
+    `Do NOT restate what happened — instead tell the writer something they might not have realized about their own month.\n` +
+    `Then provide 3–5 keywords that capture the underlying themes (not surface-level topics).\n` +
     `Respond in the same language as the entries.\n\n---\n${entries}`;
 
   return { systemPrompt, userPrompt: type === "week" ? weekPrompt : monthPrompt };

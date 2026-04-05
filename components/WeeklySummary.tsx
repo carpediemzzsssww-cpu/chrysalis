@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AiProvider, Entry, SummaryRecord, SummaryType } from "@/lib/types";
+import type { AiProvider, Entry, SummaryRecord, SummaryType, Todo } from "@/lib/types";
 import { requestSummary } from "@/lib/ai";
 import { getEntriesForRange, getSettings, getSummary, saveSummary } from "@/lib/storage";
-import { createEmptyInsights, getAdjacentMonthId, getAdjacentWeekId, getMonthDatesFromId, getMonthRangeLabel, getMoodEmoji, getMoodLabel, getWeekDatesFromId, getWeekRangeLabel, startOfWeek, summarizePeriodStats, todayKey, getWeekId, getMonthId } from "@/lib/utils";
+import { daysBetween, getAdjacentMonthId, getAdjacentWeekId, getMonthDatesFromId, getMonthRangeLabel, getMoodEmoji, getMoodLabel, getWeekDatesFromId, getWeekRangeLabel, startOfWeek, summarizePeriodStats, todayKey, getWeekId, getMonthId } from "@/lib/utils";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -116,8 +116,6 @@ export function WeeklySummary({ id, type }: { id: string; type: SummaryType }) {
   }, [id, rangeEnd, rangeStart]);
 
   const stats = summarizePeriodStats(entries);
-  const missingDays = dates.length - entries.length;
-  const insights = createEmptyInsights(entries, missingDays, stats.topMood);
   const entryMap = entries.reduce<Record<string, Entry>>((acc, entry) => {
     acc[entry.date] = entry;
     return acc;
@@ -150,8 +148,77 @@ export function WeeklySummary({ id, type }: { id: string; type: SummaryType }) {
   const chartMax = Math.max(...chartBars.map((b) => b.wordCount), 1);
   const heading = createSummaryTitle(type);
 
+  // Focus areas: aggregate tags across entries in this period
+  const focusAreas = (() => {
+    const tagDays = new Map<string, Set<string>>();
+    for (const entry of entries) {
+      for (const tag of entry.tags) {
+        if (!tagDays.has(tag)) tagDays.set(tag, new Set());
+        tagDays.get(tag)!.add(entry.date);
+      }
+    }
+    return Array.from(tagDays.entries())
+      .map(([tag, daySet]) => ({ tag, days: daySet.size }))
+      .sort((a, b) => b.days - a.days);
+  })();
+
+  // Ongoing tasks: find carried-forward todos with 2+ days lifecycle
+  const ongoingTasks = (() => {
+    const seen = new Map<string, { text: string; origin: string; lastDate: string; lastStatus: Todo["status"] }>();
+    for (const entry of entries) {
+      for (const todo of entry.todos) {
+        if (!todo.carriedFrom) continue;
+        const key = todo.text.trim();
+        if (!key) continue;
+        const existing = seen.get(key);
+        if (!existing || entry.date > existing.lastDate) {
+          seen.set(key, {
+            text: todo.text,
+            origin: existing?.origin ?? todo.carriedFrom,
+            lastDate: entry.date,
+            lastStatus: todo.status,
+          });
+        }
+        // Track the earliest origin
+        if (existing && todo.carriedFrom < existing.origin) {
+          existing.origin = todo.carriedFrom;
+        }
+      }
+    }
+    return Array.from(seen.values())
+      .map((t) => ({ ...t, days: daysBetween(t.origin, t.lastDate) }))
+      .filter((t) => t.days >= 2)
+      .sort((a, b) => b.days - a.days);
+  })();
+
   const currentKeywords = record?.keywords ?? [];
   const displayContent = mode === "manual" ? manualSummary : (record?.aiGenerated ? record.content : "") ?? "";
+  const [keywordInput, setKeywordInput] = useState("");
+  const [keywordDupeHint, setKeywordDupeHint] = useState(false);
+
+  const persistKeywords = (nextKeywords: string[]) => {
+    if (!record) return;
+    const saved = saveSummary({ ...record, keywords: nextKeywords });
+    setRecord(saved);
+  };
+
+  const addKeyword = () => {
+    const value = keywordInput.trim();
+    if (!value) return;
+    if (currentKeywords.includes(value)) {
+      setKeywordInput("");
+      setKeywordDupeHint(true);
+      setTimeout(() => setKeywordDupeHint(false), 2000);
+      return;
+    }
+    const next = [...currentKeywords, value];
+    setKeywordInput("");
+    persistKeywords(next);
+  };
+
+  const removeKeyword = (keyword: string) => {
+    persistKeywords(currentKeywords.filter((k) => k !== keyword));
+  };
 
   const persistManualSummary = () => {
     const saved = saveSummary({
@@ -518,6 +585,14 @@ export function WeeklySummary({ id, type }: { id: string; type: SummaryType }) {
               return (
                 <span key={keyword} className={`tag-chip ${tone}`}>
                   {keyword}
+                  <button
+                    type="button"
+                    className="text-[11px]"
+                    aria-label={`Remove ${keyword}`}
+                    onClick={() => removeKeyword(keyword)}
+                  >
+                    ×
+                  </button>
                 </span>
               );
             })}
@@ -527,34 +602,86 @@ export function WeeklySummary({ id, type }: { id: string; type: SummaryType }) {
             Keywords emerge after your first AI summary.
           </p>
         )}
-      </section>
-
-      <section className="glass-card p-4">
-        <p className="section-label">Insights</p>
-        <div className="space-y-3">
-          {insights.map((insight, index) => {
-            const tone =
-              index === 0
-                ? "bg-lavender-ultra"
-                : index === 1
-                  ? "bg-pale-rose-light"
-                  : "bg-misty-blue-light";
-            const icon = index === 0 ? "↑" : index === 1 ? "~" : "→";
-
-            return (
-              <div
-                key={insight}
-                className="flex items-start gap-3 rounded-[18px] border border-[color:var(--border)] bg-white/55 p-3"
-              >
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[12px] ${tone}`}>
-                  {icon}
-                </span>
-                <p className="text-sm leading-6 text-[color:var(--text-secondary)]">{insight}</p>
-              </div>
-            );
-          })}
+        <div className="mt-3 flex items-center gap-3 rounded-[18px] border border-dashed border-[color:var(--border)] px-4 py-3">
+          <input
+            value={keywordInput}
+            placeholder={keywordDupeHint ? "Already added" : "Add a keyword"}
+            className={`text-sm ${keywordDupeHint ? "text-[color:var(--text-tertiary)]" : "text-[color:var(--text-secondary)]"}`}
+            onChange={(e) => setKeywordInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === ",") {
+                e.preventDefault();
+                addKeyword();
+              }
+            }}
+          />
+          <button type="button" className="soft-button py-2 text-xs" onClick={addKeyword}>
+            Add
+          </button>
         </div>
       </section>
+
+      {focusAreas.length > 0 && (
+        <section>
+          <p className="section-label">Focus areas</p>
+          <div className="flex flex-wrap gap-2">
+            {focusAreas.map(({ tag, days }, index) => {
+              const tone =
+                index % 3 === 0
+                  ? "bg-lavender-ultra text-lavender"
+                  : index % 3 === 1
+                    ? "bg-pale-rose-light text-[#B07880]"
+                    : "bg-misty-blue-light text-[#6090A8]";
+              return (
+                <span key={tag} className={`tag-chip ${tone}`}>
+                  {tag}
+                  <span className="ml-1 text-[10px] opacity-60">{days}d</span>
+                </span>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {ongoingTasks.length > 0 && (
+        <section className="glass-card p-4">
+          <p className="section-label">Ongoing tasks</p>
+          <div className="space-y-3">
+            {ongoingTasks.map((task) => {
+              const statusStyle =
+                task.lastStatus === "done"
+                  ? "done"
+                  : task.lastStatus === "partial"
+                    ? "partial"
+                    : task.lastStatus === "skipped"
+                      ? "skipped"
+                      : "";
+              const statusChar =
+                task.lastStatus === "done"
+                  ? "✓"
+                  : task.lastStatus === "partial"
+                    ? "—"
+                    : task.lastStatus === "skipped"
+                      ? "✕"
+                      : "";
+              return (
+                <div
+                  key={task.text}
+                  className={`flex items-center gap-3 rounded-[18px] border border-[color:var(--border)] bg-white/55 px-3 py-3 ${task.lastStatus === "skipped" ? "opacity-50" : ""}`}
+                >
+                  <span className={`todo-circle ${statusStyle}`}>{statusChar}</span>
+                  <span className={`flex-1 min-w-0 text-sm ${task.lastStatus === "done" || task.lastStatus === "skipped" ? "line-through text-[color:var(--text-tertiary)]" : "text-[color:var(--text-primary)]"}`}>
+                    {task.text}
+                  </span>
+                  <span className="shrink-0 text-[10px] text-[color:var(--text-tertiary)]">
+                    {task.origin.slice(5)} · {task.days}d
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="glass-card p-4">
         <p className="section-label">Mood this period</p>

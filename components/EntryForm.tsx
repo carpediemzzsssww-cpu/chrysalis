@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Mood, Todo, TodoStatus } from "@/lib/types";
 import { deleteEntry, getAllEntries, getEntry, saveEntry } from "@/lib/storage";
-import { addDays, countWords, createId, formatEntryHeaderDate, formatLongDate, formatShortWeekday, getWeekDates, parseDateKey, QUICK_CATEGORIES, todayKey } from "@/lib/utils";
+import { addDays, countWords, createId, daysBetween, formatEntryHeaderDate, formatLongDate, formatShortWeekday, getWeekDates, parseDateKey, QUICK_CATEGORIES, todayKey } from "@/lib/utils";
 import { MoodPicker } from "@/components/MoodPicker";
 import { TodoList } from "@/components/TodoList";
 
@@ -576,44 +576,121 @@ export function EntryForm({ date }: { date: string }) {
       </section>
 
       <section>
-        <div className="mb-3 flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-misty-blue" />
-          <p className="section-label mb-0">Today&apos;s to-do</p>
-        </div>
-        <TodoList
-          todos={todos}
-          focusId={focusTodoId}
-          onStatusChange={(id, status) =>
-            updateTodos(
-              todosRef.current.map((todo) => (todo.id === id ? { ...todo, status } : todo)),
-            )
-          }
-          onTextChange={(id, value) => {
-            const next = todosRef.current.map((todo) =>
-              todo.id === id ? { ...todo, text: value } : todo,
-            );
-            todosRef.current = next;
-            setTodos(next);
-          }}
-          onNoteChange={(id, note) =>
-            updateTodos(
-              todosRef.current.map((todo) => (todo.id === id ? { ...todo, note } : todo)),
-            )
-          }
-          onAdd={() => {
-            const newId = createId();
-            const next = [...todosRef.current, { id: newId, text: "", status: "pending" as TodoStatus }];
-            todosRef.current = next;
-            setTodos(next);
-            setFocusTodoId(newId);
-          }}
-          onRemove={(id) => updateTodos(todosRef.current.filter((todo) => todo.id !== id))}
-          onReorder={(next) => updateTodos(next)}
-          onBlur={() => persist()}
-        />
-        <div className="mt-2 text-xs text-[color:var(--text-tertiary)]">
-          Tasks save when you leave a field.
-        </div>
+        {(() => {
+          const ongoingTodos = todos.filter((t) => t.carriedFrom);
+          const todayTodos = todos.filter((t) => !t.carriedFrom);
+
+          const todoCallbacks = {
+            onStatusChange: (id: string, status: TodoStatus) =>
+              updateTodos(
+                todosRef.current.map((todo) => (todo.id === id ? { ...todo, status } : todo)),
+              ),
+            onTextChange: (id: string, value: string) => {
+              const next = todosRef.current.map((todo) =>
+                todo.id === id ? { ...todo, text: value } : todo,
+              );
+              todosRef.current = next;
+              setTodos(next);
+            },
+            onNoteChange: (id: string, note: string) =>
+              updateTodos(
+                todosRef.current.map((todo) => (todo.id === id ? { ...todo, note } : todo)),
+              ),
+            onRemove: (id: string) => updateTodos(todosRef.current.filter((todo) => todo.id !== id)),
+            onBlur: () => persist(),
+          };
+
+          return (
+            <>
+              {ongoingTodos.length > 0 && (
+                <div className="mb-5">
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-lavender" />
+                    <p className="section-label mb-0">Ongoing</p>
+                  </div>
+                  <div className="glass-card p-4">
+                    <div className="space-y-3">
+                      {ongoingTodos.map((todo) => {
+                        const days = daysBetween(todo.carriedFrom!, date);
+                        const isDone = todo.status === "done";
+                        const isSkipped = todo.status === "skipped";
+                        return (
+                          <div
+                            key={todo.id}
+                            className={`rounded-[18px] border bg-white/55 px-3 py-3 border-[color:var(--border)] ${isSkipped ? "opacity-50" : ""}`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <button
+                                type="button"
+                                className={`todo-circle ${todo.status === "done" ? "done" : todo.status === "partial" ? "partial" : todo.status === "skipped" ? "skipped" : ""}`}
+                                onClick={() => todoCallbacks.onStatusChange(todo.id, todo.status === "pending" ? "done" : todo.status === "done" ? "partial" : todo.status === "partial" ? "skipped" : "pending")}
+                              >
+                                {todo.status === "done" ? "✓" : todo.status === "partial" ? "—" : todo.status === "skipped" ? "✕" : ""}
+                              </button>
+                              <span className={`flex-1 min-w-0 text-sm leading-snug ${isDone || isSkipped ? "line-through text-[color:var(--text-tertiary)]" : "text-[color:var(--text-primary)]"}`}>
+                                {todo.text}
+                              </span>
+                              <span className="shrink-0 text-[10px] text-[color:var(--text-tertiary)]">
+                                {todo.carriedFrom!.slice(5)} · {days}d
+                              </span>
+                              <button
+                                type="button"
+                                className="shrink-0 text-xs text-[color:var(--text-tertiary)]"
+                                onClick={() => todoCallbacks.onRemove(todo.id)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            {todo.status !== "pending" && (
+                              <div className="mt-2 pl-[2.75rem]">
+                                <input
+                                  value={todo.note ?? ""}
+                                  placeholder={todo.status === "done" ? "How did it go?" : todo.status === "partial" ? "What's still left?" : "Why was it skipped?"}
+                                  className="text-xs italic text-[color:var(--text-secondary)] placeholder:text-[color:var(--text-tertiary)]"
+                                  onChange={(e) => todoCallbacks.onNoteChange(todo.id, e.target.value)}
+                                  onBlur={todoCallbacks.onBlur}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-misty-blue" />
+                  <p className="section-label mb-0">{ongoingTodos.length > 0 ? "Today" : "Today\u2019s to-do"}</p>
+                </div>
+                <TodoList
+                  todos={todayTodos}
+                  focusId={focusTodoId}
+                  onStatusChange={todoCallbacks.onStatusChange}
+                  onTextChange={todoCallbacks.onTextChange}
+                  onNoteChange={todoCallbacks.onNoteChange}
+                  onAdd={() => {
+                    const newId = createId();
+                    const next = [...todosRef.current, { id: newId, text: "", status: "pending" as TodoStatus }];
+                    todosRef.current = next;
+                    setTodos(next);
+                    setFocusTodoId(newId);
+                  }}
+                  onRemove={todoCallbacks.onRemove}
+                  onReorder={(reorderedToday) => {
+                    updateTodos([...ongoingTodos, ...reorderedToday]);
+                  }}
+                  onBlur={todoCallbacks.onBlur}
+                />
+                <div className="mt-2 text-xs text-[color:var(--text-tertiary)]">
+                  Tasks save when you leave a field.
+                </div>
+              </div>
+            </>
+          );
+        })()}
       </section>
 
       <section>
